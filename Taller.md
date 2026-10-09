@@ -1,8 +1,8 @@
-# 🧠 Guía Completa de Deep Learning con NumPy (MNIST desde cero)
+# 🧠 Taller de Deep Learning con NumPy: Red Neuronal Feedforward (MNIST desde Cero)
 
-Esta guía documenta la construcción, entrenamiento y evaluación de una red neuronal artificial (*Feedforward Multi-Layer Perceptron*) con una capa oculta programada enteramente desde cero utilizando **Python y NumPy** para clasificar dígitos manuscritos del dataset **MNIST**.
+Este taller documenta la construcción, entrenamiento y evaluación de una red neuronal artificial (*Feedforward Multi-Layer Perceptron*) con una capa oculta programada enteramente desde cero utilizando **Python y NumPy** para clasificar dígitos manuscritos del dataset **MNIST**.
 
-Contiene **todos y cada uno de los bloques de código exactos del tutorial original** en orden secuencial, acompañados de explicaciones de cada concepto, análisis profundo de los hiperparámetros, interpretación de las gráficas resultantes y la solución a todos los errores encontrados durante la ejecución.
+Contiene **todos y cada uno de los bloques de código exactos** en orden secuencial, acompañados de explicaciones de cada concepto, análisis de los hiperparámetros, interpretación de las gráficas resultantes, pruebas de inferencia con números propios y preguntas breves de evaluación.
 
 ---
 
@@ -20,7 +20,7 @@ Contiene **todos y cada uno de los bloques de código exactos del tutorial origi
 
 - **Entrada ($layer_0$):** Imagen aplanada de $28 \times 28 = 784$ píxeles.
 - **Capa oculta ($layer_1$):** 100 neuronas con activación no lineal **ReLU** y **Dropout** ($p=0.5$).
-- **Capa de salida ($layer_2$):** 10 valores que se comparan contra las etiquetas codificadas en *one-hot*.
+- **Capa de salida ($layer_2$):** 10 valores continuos que se comparan contra las etiquetas codificadas en *one-hot*.
 - **Pérdida:** Error Cuadrático (Suma de residuos al cuadrado - SSE/MSE).
 
 ---
@@ -181,7 +181,7 @@ The data type of test labels: uint8
 ```
 
 ### Celda 13: Definir la función de One-Hot Encoding
-Convierte enteros de 0 a 9 en vectores de ceros con un 1.0 en la posición correspondiente:
+Convierte enteros de 0 a 9 en vectores de 10 dimensiones con un 1.0 en la posición correspondiente al número:
 
 ```python
 def one_hot_encoding(labels, dimension=10):
@@ -270,13 +270,13 @@ num_labels = 10
 
 ---
 
-### 🔬 Explicación Detallada de los Hiperparámetros
+### 🔬 Explicación de los Hiperparámetros
 
-| Hiperparámetro | Valor Configurado | ¿Qué es y qué función cumple? | ¿Qué pasa si se modifica? |
+| Hiperparámetro | Valor Configurado | Descripción y Función | Efecto al Modificarlo |
 |---|---|---|---|
-| **`learning_rate` ($\alpha$)** | `0.005` | Tasa o paso de aprendizaje del Descenso de Gradiente. Escala los gradientes calculados antes de restarlos a las matrices de pesos. | • Si es **demasiado alto** (ej. 0.5): las actualizaciones son excesivas, el algoritmo diverge y la pérdida se dispara a infinito.<br>• Si es **muy bajo** (ej. 0.00001): la red requeriría miles de épocas para converger. |
-| **`epochs`** | `100` | Cantidad total de iteraciones completas sobre todo el dataset de entrenamiento ($N=1000$). | • Pocas épocas (ej. 10): el modelo queda en *underfitting* (no termina de aprender los patrones).<br>• Demasiadas épocas sin regularización: el modelo memoriza el conjunto y pierde generalización (*overfitting*). por lo tanto el numero recomendado es 100 pero si el dispositivo no es tan potente se puede bajar el numero para no esperar tanto|
-| **`hidden_size`** | `100` | Número de neuronas en la capa oculta intermedia. Define el espacio latente de abstracción del modelo. | • Menor (ej. 20): menor capacidad de aprendizaje; puede fallar al distinguir dígitos similares (como 4 y 9 o 3 y 8).<br>• Mayor (ej. 500): mayor capacidad representacional, pero el costo computacional por época crece significativamente. |
+| **`learning_rate` ($\alpha$)** | `0.005` | Tasa o paso de aprendizaje del Descenso de Gradiente. Escala los gradientes calculados antes de restarlos a las matrices de pesos. | • Si es **demasiado alto** (ej. 0.5): las actualizaciones son excesivas, el algoritmo diverge y la pérdida se dispara.<br>• Si es **muy bajo** (ej. 0.00001): la red requeriría miles de épocas para converger. |
+| **`epochs`** | `100` | Cantidad total de iteraciones completas sobre todo el dataset de entrenamiento ($N=1000$). | • Pocas épocas (ej. 10): el modelo queda en *underfitting* (no termina de aprender patrones).<br>• Demasiadas épocas sin regularización: el modelo memoriza el conjunto y pierde generalización (*overfitting*). Si tu equipo es menos potente, puedes usar 50 épocas para mayor velocidad. |
+| **`hidden_size`** | `100` | Número de neuronas en la capa oculta intermedia. Define el espacio latente de abstracción del modelo. | • Menor (ej. 20): menor capacidad de aprendizaje; puede confundir dígitos similares (como 4 y 9 o 3 y 8).<br>• Mayor (ej. 500): mayor capacidad representacional, pero el costo computacional por época crece significativamente. |
 | **`pixels_per_image`** | `784` | Dimensión del vector de entrada. Corresponde al aplanado de la imagen cuadrada ($28 \times 28 = 784$). | Parámetro rígido determinado por la resolución del dataset MNIST. |
 | **`num_labels`** | `10` | Dimensión de la capa de salida. Cada neurona produce una puntuación para cada clase ($0, 1, 2, ..., 9$). | Parámetro rígido correspondiente a los 10 dígitos decimales. |
 | **`Dropout (p=0.5)`** | `np.random.randint(0, 2, ...)` | Técnica de regularización estocástica. Durante el entrenamiento apaga aleatoriamente el 50% de las activaciones de `layer_1` multiplicándolas por 0 y escalando las restantes por 2 (`layer_1 *= dropout_mask * 2`). | Fuerza a la red a desarrollar representaciones redundantes y robustas, impidiendo que grupos de neuronas se vuelvan codependientes. |
@@ -456,7 +456,6 @@ A lo largo del taller se presentaron los siguientes fallos típicos:
 - **Causa:** Intentar invocar `jupyter notebook` sin activar previamente el entorno virtual `venv` donde fue instalado.
 - **Solución:** Activar el entorno virtual antes de ejecutar comandos:
   ```powershell
-  cd c:\Users\Diego\Desktop\Taller\NumPy-org-Tutorial-Deep-Learning-from-Scratch
   .\venv\Scripts\Activate.ps1
   jupyter notebook
   ```
@@ -470,9 +469,9 @@ A lo largo del taller se presentaron los siguientes fallos típicos:
 
 ---
 
-## 7. 🔮 Inferencia: ¿Cómo Probar y Clasificar Nuevas Imágenes?
+## 7. 🔮 Inferencia: Probar y Clasificar Nuevas Imágenes
 
-Una vez terminado el entrenamiento, las matrices `weights_1` y `weights_2` contienen el "conocimiento" de la red. Para clasificar cualquier imagen realizamos una **pasada hacia adelante (*Forward Pass*) sin Dropout** (el Dropout se utiliza exclusivamente durante la fase de entrenamiento).
+Una vez terminado el entrenamiento, las matrices `weights_1` y `weights_2` contienen los pesos aprendidos por la red. Para clasificar cualquier imagen realizamos una **pasada hacia adelante (*Forward Pass*) sin Dropout** (el Dropout se utiliza exclusivamente durante la fase de entrenamiento).
 
 ### Opción 1: Probar una imagen específica del conjunto de prueba (`test_images`)
 
@@ -564,3 +563,15 @@ mi_vector = np.array(img).reshape(784) / 255.0
 pred, puntuaciones = predecir_digito(mi_vector)
 print(f"La red neuronal reconoce el número: {pred}")
 ```
+
+---
+
+## 8. 📝 Preguntas de Evaluación del Taller
+
+Para consolidar lo aprendido en la práctica, responde las siguientes dos preguntas clave:
+
+### 1. ¿Qué aprende a hacer la red neuronal en este taller?
+> **Respuesta:** Aprende a observar imágenes de números escritos a mano e identificar qué dígito es (del 0 al 9).
+
+### 2. ¿Cómo decide la red cuál número es el que está en la imagen?
+> **Respuesta:** La red calcula una puntuación para cada número posible (del 0 al 9) y elige como resultado final el que tenga la puntuación más alta.
